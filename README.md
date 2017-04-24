@@ -1,4 +1,4 @@
-# Embed.rocks integration example
+# Embed.rocks integration example (plain JavaScript)
 
 An example Node.js app for [Embed.rocks](https://embed.rocks/)
 
