@@ -1,12 +1,22 @@
 # Embed.rocks integration example (plain JavaScript)
 
-An example Node.js app for [Embed.rocks](https://embed.rocks/)
+An example Node.js app for [Embed.rocks](https://embed.rocks/). Use this for starting your own implementation.
 
 Install by: 
   - cloning this repository. 
   - `npm install`
   - `npm start`
   - Then point your browser to http://127.0.0.1:3000
+
+## What this contains
+
+This is a plain JavaScript version of our integration example. The other version, which contains [Mustache-like](https://mustache.github.io/) template code for cards can be found [here](https://github.com/embed-rocks/embed-example-2). You can use whichever suits you better.
+
+In `public/js/Card.js` file you will find the template that renders card data into html. You can use that as a basis for your own implementation.
+
+In `public/style/card.style` you will find the Stylus stylesheet code for cards. There is also a compiled CSS file.
+
+This is mostly plain JavaScript, but Browserify is used to bundle JS code. 
 
 ## Configuring
 
