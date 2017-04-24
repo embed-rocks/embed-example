@@ -10,7 +10,7 @@ Install by:
 
 ## What this contains
 
-This is a plain JavaScript version of our integration example. The other version, which contains [Mustache-like](https://mustache.github.io/) template code for cards can be found [here](https://github.com/embed-rocks/embed-example-2). You can use whichever suits you better.
+This is a plain JavaScript version of our integration example. The other version, which contains [Mustache](https://mustache.github.io/)-like template code for cards can be found [here](https://github.com/embed-rocks/embed-example-2). You can use whichever suits you better.
 
 In `public/js/Card.js` file you will find the template that renders card data into html. You can use that as a basis for your own implementation.
 
