@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Embed.rocks example app</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" type="text/css" href="/style/card.css">
+  <style type="text/css">
+  body {
+    font-size: 16px;
+  }
+  .card {
+    font-size: 15px;
+  }
+  #card-container {
+    margin-top: 20px;
+  }
+  .main-panel {
+    margin: 0 auto;
+    width: 600px;
+    font-family: sans-serif;
+  }
+  input {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+  }
+  </style>
+</head>
+<body>
+  <div class="main-panel">
+    <h1 class="center m-100">Embed.rocks example app</h1>
+    <form class="try-it">
+        <h2>Paste a link below:</h2>
+        <input autocomplete="off" autofocus="autofocus" id="link" type="text" value="" autofocus onfocus="this.select()">
+    </form>
+    <div id="card-container"></div>
+  </div>
+  <script type="text/javascript" src="/js/bundle.js"></script>
+</body>
+</html>
