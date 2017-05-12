@@ -1,6 +1,6 @@
 # Embed.rocks integration example (plain JavaScript)
 
-An example Node.js app for [Embed.rocks](https://embed.rocks/). Use this for starting your own implementation.
+An example Node.js app for Embed.rocks. Use this for starting your own implementation.
 
 Install by: 
   - cloning this repository. 
@@ -27,3 +27,7 @@ Note that in this example app fetches the embed data on the server site, never e
 ## Safe images
 
 If you want to use a "safe domain" (for safe images), set it in `public/js/Card.js`. Remember to add a trailing slash into it. For example `//safe.mydomain.com/` (for both http and https). You need to have an NGINX setup for this. See the example [nginx.conf](https://gist.github.com/ile/ef57487dc556ef43d694863224a2f02f).
+
+## About us
+
+Brought to you by Embed.rocks, the [Embed.ly alternative](https://embed.rocks/).
