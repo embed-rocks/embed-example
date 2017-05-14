@@ -4,6 +4,7 @@ An example Node.js app for Embed.rocks. Use this for starting your own implement
 
 Install by: 
   - cloning this repository. 
+  - Configure API key (see below)
   - `npm install`
   - `npm start`
   - Then point your browser to http://127.0.0.1:3000
