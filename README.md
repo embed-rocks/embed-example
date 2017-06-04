@@ -8,9 +8,9 @@ Install by:
   - `npm start`
   - Then point your browser to http://127.0.0.1:3000
 
-## What this contains
+## What does this do?
 
-This is a plain JavaScript version of our integration example. The other version, which contains Mustache-like template code for cards can be found [here](https://github.com/embed-rocks/embed-example-2). You can use whichever suits you better.
+This is a plain JavaScript version of our integration example. The other version, which contains Mustache-like template code for cards can be found [here](https://github.com/embed-rocks/embed-example-2). **Note that the logic for rendering a card may be easier to understand from the version that uses a templating engine.**
 
 In `public/js/Card.js` file you will find the template that renders card data into html. You can use that as a basis for your own implementation.
 

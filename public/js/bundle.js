@@ -1305,7 +1305,20 @@ module.exports = Card;
 
 // set this if you want to use a domain to display images safely
 // var defaults = { safe: '//safe.mydomain.com/' };
-var defaults = { };
+const defaults = { };
+
+const COMBINED_MAX_LENGTH_FOR_SMALL_CARD = 180
+const CARD_WIDTH = 600
+const CARD_HEIGHT_SMALL = 125
+
+const oembedSites = [
+  'facebook.com',
+  'twitter.com',
+  'airtable.com',
+  'mathembed.com',
+  'soundcloud.com'
+]
+
 
 function Card(item, options) {
   if (!(this instanceof Card)){
@@ -1316,15 +1329,25 @@ function Card(item, options) {
   this.options = Object.assign(options || {}, defaults);
 }
 
-Card.prototype.render = function() {
+Card.prototype.render = function(small) {
   var res = '',
       item = this.item;
 
+  this.small = small;
+
+  if (item.images && item.images[0] && item.images[0].width < 150) {
+    this.small = small = true;
+  }
+
   if (item) {
-    res += `<div class="card">`;
+    res += `<div class="card card-${item.type} ${small ? 'card-small' : 'card-big'} ${helpers.preferOembed(item, small) ? 'card-iframe': ''} ${helpers.isHtml5Video(item) ? 'card-html5-video' : ''}">`;
 
     if (item.type == 'error') {
       res += this.error(item);
+    }
+
+    else if (helpers.preferOembed(item, small)) {
+      res += this.oembed(item);
     }
 
     else if (item.type == 'audio') {
@@ -1366,7 +1389,7 @@ Card.prototype.render = function() {
 Card.prototype.error = function() {
   return `
     <p class="error">
-      ${this.item.error}
+      ${this.item.msg || (this.item.error && (this.item.error.code || this.item.error.errno)) }
     </p>
   `;
 }
@@ -1378,6 +1401,10 @@ Card.prototype.rich = function() {
       ${this.text()}
     </a>
   `;  
+}
+
+Card.prototype.oembed = function() {
+  return this.item.oembed.html;  
 }
 
 Card.prototype.video = function() {
@@ -1405,12 +1432,12 @@ Card.prototype.video = function() {
 Card.prototype.image = function(image) {
   if (this.options.safe && image.safe) {
     return `
-      <img onerror="this.src='/img/broken.jpg'" class="card-image" src="${options.safe}${image.safe}">
+      <img onerror="this.src='/img/broken.jpg'" onload="showImage(this)" class="card-image" src="${options.safe}${image.safe}" style="${helpers.dimensions(image, this.small)}">
     `;
   }
   else {
     return `
-      <img onerror="this.src='/img/broken.jpg'" class="card-image" src="${image.url}">
+      <img onerror="this.src='/img/broken.jpg'" onload="showImage(this)" class="card-image" src="${image.url}" style="${helpers.dimensions(image, this.small)}">
     `;
   }
 }
@@ -1452,7 +1479,8 @@ Card.prototype.text = function() {
   var item = this.item;
   var title = item.title? `<h3>${item.title}</h3>`: '';
   var author = item.author || item.published_date? `<p class="author">${item.author || ''} ${helpers.publishedDate(item.published_date)}</p>`: '';
-  var description = item.description? `<p>${item.description}</p>`: '';
+  console.log(this, this.small);
+  var description = item.description? (this.small? `<p>${this.descriptionForSmallCard()}</p>`: `<p>${item.description}</p>`): '';
   var favicon = '';
 
   if (item.favicon || item.site) {
@@ -1477,6 +1505,20 @@ Card.prototype.text = function() {
   `;
 }
 
+// If we are showing a small card, we need to trim the description a bit.
+Card.prototype.descriptionForSmallCard = function() {
+  var description, l, ref, ref1, item = this.item;
+  if (item) {
+    l = ((ref = item.title) != null ? ref.length : void 0) + ((ref1 = item.description) != null ? ref1.length : void 0) - COMBINED_MAX_LENGTH_FOR_SMALL_CARD;
+    if (l > 0) {
+      description = helpers.trim(item.description, item.description.length - l);
+    }
+    return description || item.description;
+  } else {
+    return '';
+  }
+}
+
 Card.prototype.btn = function() {
   return `
     <span class="btn">
@@ -1497,6 +1539,31 @@ Card.prototype.play = function() {
 };
 
 var helpers = {
+
+  trim: (description, len) => {
+    if (description.length > len) {
+      description = description.substring(0, len);
+      description = description.substring(0, description.lastIndexOf(' ')) + '...';
+    }
+    description = description.trim();
+    return description;
+  },
+
+  preferOembed: (item, small) => {
+    var item, ref, toRegExp;
+    toRegExp = function(arr) {
+      return new RegExp("^https?:\/\/(?:www\.)?" + arr.map(function(el) {
+        return "(?:" + el + ")";
+      }).join('|') + "$", 'i');
+    };
+
+    if (small) {
+      return false;
+    }
+
+    return (item != null ? (ref = item.oembed) != null ? ref.type : void 0 : void 0) === 'rich' && (item != null ? item.url.match(toRegExp(oembedSites)) : void 0);
+  },
+
   isHtml5Video: (item) => {
     return item &&
       item.type === 'video' &&
@@ -1525,28 +1592,85 @@ var helpers = {
     } 
 
     return ''
-  }
+  },
+
+  dimensions: function(image, small) {
+    var h, small, w;
+    
+    if (small) {
+      h = CARD_HEIGHT_SMALL;
+      w = CARD_HEIGHT_SMALL * (image.width / image.height);
+    } else {
+      w = CARD_WIDTH;
+      h = (CARD_WIDTH * image.height) / image.width;
+    }
+
+    return "width: " + w + "px; height: " + h + "px";
+  }  
 }
 },{}],9:[function(require,module,exports){
 require('whatwg-fetch');
 var linkify = require('linkify-it')();
 var Card = require('./Card');
 
+window.showImage = function(image) { 
+  if (image.classList) {
+    setTimeout(function() { image.classList.add('show') }, 0);
+  }
+  else {
+    setTimeout(function() { image.className += ' show' }, 10);
+  }
+}
+
+// an utility
+var escape = document.createElement('textarea');
+function escapeHTML(html) {
+    escape.textContent = html;
+    return escape.innerHTML;
+}
+
+function unescapeHTML(html) {
+    escape.innerHTML = html;
+    return escape.textContent;
+}
+
+
 function App() {
 	this.link = document.getElementById('link');
-	this.container = document.getElementById('card-container');
+	this.containerBig = document.getElementById('card-container-big');
+	this.containerSmall = document.getElementById('card-container-small');
+	this.containerJson = document.getElementById('json-container');
+	this.fetching = document.getElementById('fetching');
 	this.link.addEventListener('input', this.getpreview.bind(this));
 }
 
 App.prototype.setresult = function(err, json) {
-	console.log(err, json);
 	if (json) {
 		this.card = new Card(json);
+
+		// render the card as a big one
 		console.log(this.card.render());
-		this.container.innerHTML = this.card.render();
+		// this.containerBig.html($.parseHTML(this.card.render()));
+
+		var range = document.createRange();
+		range.setStart(this.containerBig, 0);
+		this.containerBig.innerHTML = '';
+		this.containerBig.appendChild(range.createContextualFragment(this.card.render()));
+
+		// render the card as a small one
+		this.containerSmall.innerHTML = this.card.render(true);
+
+		// escape the html that is in the json
+		// this is for presentation
+		json.html = escapeHTML(json.html);
+		json.article = escapeHTML(json.article);
+		if (json.oembed && json.oembed.html) json.oembed.html = escapeHTML(json.oembed.html);
+		this.containerJson.innerHTML = JSON.stringify(json, null, 2);
 	}
 }
 
+// Get the card data from the api server.
+// This is the client side function that will first call a route on our server, which will actually get the data.
 App.prototype.getpreview = function() {
 	var m, matches, self, text, url, urls;
 
@@ -1556,6 +1680,8 @@ App.prototype.getpreview = function() {
 	if (typeof text === 'undefined') {
 		return;
 	}
+
+	this.fetching.classList.add('show');
 
 	matches = linkify.match(text) || [];
 
@@ -1573,15 +1699,19 @@ App.prototype.getpreview = function() {
 		url = urls[0];
 
 		return window.fetch("/api?url=" + (encodeURIComponent(url))).then(function(response) {
+			self.fetching.classList.remove('show');
 			return response.json();
 		}).then(function(json) {
+			self.fetching.classList.remove('show');
 			return self.setresult(null, json);
 		})["catch"](function(ex) {
+			self.fetching.classList.remove('show');
 			return self.setresult(ex, null);
 		});
 	}
 }
 
+// Open the video player
 App.prototype.play = function() {
 	var el = document.createElement('div');
 	var self = this;
@@ -1599,6 +1729,7 @@ App.prototype.play = function() {
 	document.body.appendChild(el);
 };
 
+// Stop the video player
 App.prototype.stop = function(e) {
 	if (e) e.stopPropagation();
 	var o = document.getElementById('video-player-wrapper');
