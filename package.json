@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": { "start" : "./node_modules/.bin/stylus public/style -o public/style; ./node_modules/.bin/browserify public/js/main.js -o public/js/bundle.js; node app.js" },
+  "scripts": {
+    "start": "./node_modules/.bin/stylus public/style -o public/style; ./node_modules/.bin/browserify public/js/main.js -o public/build/bundle.js; node app.js"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {
