@@ -1,7 +1,3 @@
-require('whatwg-fetch');
-var linkify = require('linkify-it')();
-var Card = require('./Card');
-
 window.showImage = function(image) { 
   if (image.classList) {
     setTimeout(function() { image.classList.add('show') }, 0);
@@ -13,6 +9,7 @@ window.showImage = function(image) {
 
 // an utility
 var escape = document.createElement('textarea');
+
 function escapeHTML(html) {
     escape.textContent = html;
     return escape.innerHTML;
@@ -26,11 +23,12 @@ function unescapeHTML(html) {
 
 function App() {
 	this.link = document.getElementById('link');
+	this.button = document.getElementById('button');
 	this.containerBig = document.getElementById('card-container-big');
 	this.containerSmall = document.getElementById('card-container-small');
 	this.containerJson = document.getElementById('json-container');
 	this.fetching = document.getElementById('fetching');
-	this.link.addEventListener('input', this.getpreview.bind(this));
+	this.button.addEventListener('click', this.getpreview.bind(this));
 }
 
 App.prototype.setresult = function(err, json) {
@@ -38,9 +36,6 @@ App.prototype.setresult = function(err, json) {
 		this.card = new Card(json);
 
 		// render the card as a big one
-		console.log(this.card.render());
-		// this.containerBig.html($.parseHTML(this.card.render()));
-
 		var range = document.createRange();
 		range.setStart(this.containerBig, 0);
 		this.containerBig.innerHTML = '';
@@ -60,44 +55,31 @@ App.prototype.setresult = function(err, json) {
 
 // Get the card data from the api server.
 // This is the client side function that will first call a route on our server, which will actually get the data.
-App.prototype.getpreview = function() {
-	var m, matches, self, text, url, urls;
+App.prototype.getpreview = function(event) {
+	var m, matches, self, url, urls;
+
+	event.stopPropagation();
+	event.preventDefault();
 
 	self = this;
-	text = this.link.value;
+	url = this.link.value;
 
-	if (typeof text === 'undefined') {
+	if (!url) {
 		return;
 	}
 
 	this.fetching.classList.add('show');
 
-	matches = linkify.match(text) || [];
-
-	urls = (function() {
-		var i, len, results;
-		results = [];
-		for (i = 0, len = matches.length; i < len; i++) {
-			m = matches[i];
-			results.push(m != null ? m.url : void 0);
-		}
-		return results;
-	})();
-
-	if (urls.length) {
-		url = urls[0];
-
-		return window.fetch("/api?url=" + (encodeURIComponent(url))).then(function(response) {
-			self.fetching.classList.remove('show');
-			return response.json();
-		}).then(function(json) {
-			self.fetching.classList.remove('show');
-			return self.setresult(null, json);
-		})["catch"](function(ex) {
-			self.fetching.classList.remove('show');
-			return self.setresult(ex, null);
-		});
-	}
+	return window.fetch("/api?url=" + (encodeURIComponent(url))).then(function(response) {
+		self.fetching.classList.remove('show');
+		return response.json();
+	}).then(function(json) {
+		self.fetching.classList.remove('show');
+		return self.setresult(null, json);
+	})["catch"](function(ex) {
+		self.fetching.classList.remove('show');
+		return self.setresult(ex, null);
+	});
 }
 
 // Open the video player

@@ -11,7 +11,6 @@
 //  var rendered = card.render();
 // 
 
-module.exports = Card;
 
 // set this if you want to use a domain to display images safely
 // var defaults = { safe: '//safe.mydomain.com/' };

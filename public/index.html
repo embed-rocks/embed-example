@@ -9,22 +9,27 @@
     font-size: 16px;
     background-color: #f9f9f9;
   }
+
   .card {
     font-size: 15px;
   }
+
   #card-container {
     margin-top: 20px;
   }
+
   .main-panel {
     margin: 0 auto;
     width: 600px;
     font-family: sans-serif;
   }
+
   input {
     width: 100%;
     padding: 10px;
     box-sizing: border-box;
   }
+
   #json-container {
     white-space: pre;
     margin: 50px 0;
@@ -33,14 +38,17 @@
     font-size: 10px;
     font-family: monospace;    
   }
+
   .card-container {
     margin-top: 30px;
   }
+
   #fetching {
     opacity: 0;
     margin-top: 10px;
     font-size: 0.9em;
   }
+
   #fetching.show {
     opacity: 1;
   }
@@ -48,16 +56,18 @@
 </head>
 <body>
   <div class="main-panel">
-    <h1 class="center m-100">Embed.rocks example app</h1>
+    <h1 class="center m-100">Embed.rocks example app (vanilla js)</h1>
     <form class="try-it">
         <h2>Paste a link below:</h2>
         <input autocomplete="off" autofocus="autofocus" id="link" type="text" value="" autofocus onfocus="this.select()">
+        <button id="button">Get card</button>
     </form>
     <div id="fetching">Fetching...</div>
     <div class="card-container" id="card-container-big"></div>
     <div class="card-container" id="card-container-small"></div>
     <div id="json-container"></div>
   </div>
-  <script type="text/javascript" src="/build/bundle.js"></script>
+  <script type="text/javascript" src="/js/Card.js"></script>
+  <script type="text/javascript" src="/js/main.js"></script>
 </body>
 </html>

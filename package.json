@@ -1,19 +1,16 @@
 {
-  "name": "embed-example-vanilla",
+  "name": "embed-example-vanilla-2",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "./node_modules/.bin/stylus public/style -o public/style; ./node_modules/.bin/browserify public/js/main.js -o public/build/bundle.js; node app.js"
+    "start": "./node_modules/.bin/stylus public/style -o public/style; node app.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "browserify": "^14.3.0",
     "express": "^4.15.2",
-    "linkify-it": "^2.0.3",
     "request": "^2.81.0",
-    "stylus": "^0.54.5",
-    "whatwg-fetch": "^2.0.3"
+    "stylus": "^0.54.5"
   }
 }
